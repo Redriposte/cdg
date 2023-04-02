@@ -1,7 +1,11 @@
+import Body from "./components/Body";
+import SideNav from "./components/SideNav";
+
 function App() {
   return (
     <div className="App">
-      <h1>APPP</h1>
+      <SideNav />
+      <Body />
     </div>
   );
 }

@@ -1,0 +1,55 @@
+.body {
+
+    &__header {
+        h1 {
+            color: var(--dark-gray);
+            font-size: 1.1rem;
+            margin-top: 5px;
+            letter-spacing: -0.2px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-top: 15px;
+            letter-spacing: -1px;
+        }
+    }
+
+    &__search {
+        position: relative;
+        display: flex;
+        margin-top: 30px;
+
+        & input {
+            border-radius: 50px;
+        }
+
+        &__input {
+            position: relative;
+            margin-right: 50px;
+            border-radius: 50px;
+        }
+
+        &__input__icon {
+            position: absolute;
+            top: 19px;
+            left: 20px;
+            z-index: 1;
+        }
+    }
+
+    .react-select-container {
+        min-width: 450px;
+        max-width: 450px;
+    }
+
+    .react-select__control {
+        height: 55px;
+        overflow: auto;
+    }
+
+    .react-select__multi-value {
+        border-radius: 50px;
+        padding: 5px 10px;
+    }
+}
