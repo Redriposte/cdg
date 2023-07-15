@@ -2,10 +2,19 @@
     background-color: #fff;
     // height: 415px;
     min-height: 392px;
-    width: 275px;
+    width: 265px;
     border-radius: 15px;
     border: 1px solid var(--light-gray);
     padding: 15px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+
+    @media screen and (max-width: 674px) {
+        width: auto;
+    }
 
     header {
         display: flex;
@@ -54,7 +63,7 @@
         p {
             font-size: 0.85rem;
             line-height: 1.4;
-            min-height: 60px;
+            // min-height: 60px;
         }
 
         .preview-container {
@@ -97,6 +106,7 @@
         border-top: 1px solid var(--dark-gray);
         opacity: 0.4;
         margin-top: 10px;
+        width: 100%;
     }
 
     .rs {

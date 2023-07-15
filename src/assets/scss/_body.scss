@@ -6,7 +6,7 @@
             margin-top: 5px;
             letter-spacing: -0.2px;
 
-            @media screen and (max-width: 992px) {
+            @media screen and (max-width: 1224px) {
                 font-size: 0.9rem;
             }
         }
@@ -16,14 +16,18 @@
             margin-top: 15px;
             letter-spacing: -1px;
 
-            @media screen and (max-width: 992px) {
+            @media screen and (max-width: 1224px) {
                 font-size: 1.3rem;
             }
         }
     }
 
-    @media screen and (max-width: 992px) {
+    @media screen and (max-width: 1224px) {
         margin: 35px 30px;
+    }
+
+    @media screen and (max-width: 480px) {
+        margin: 0 10px;
     }
 
     &__search {
@@ -35,7 +39,7 @@
         & .btn-search {
             height: 55px;
 
-            @media screen and (max-width: 992px) {
+            @media screen and (max-width: 1224px) {
                 width: 100%;
                 text-align: center;
                 margin-top: 20px;
@@ -51,7 +55,7 @@
             margin-right: 50px;
             border-radius: 50px;
 
-            @media screen and (max-width: 992px) {
+            @media screen and (max-width: 1224px) {
                 width: 100%;
                 margin-right: 0;
             }
@@ -65,11 +69,56 @@
         }
     }
 
+    .totals {
+        display: flex;
+        justify-content: space-between;
+        flex-grow: 1;
+
+        @media screen and (max-width: 1224px) {
+            display: none;
+        }
+    }
+
+    hr.head-hr {
+        border: none;
+        border-right: 1px solid var(--light-gray);
+        transform: scaleY(2);
+
+        @media screen and (max-width: 1224px) {
+            transform: scaleY(1);
+            margin: 0;
+        }
+    }
+
+    .total-likes, .total-rt {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--dark-gray);
+
+        @media screen and (max-width: 1224px) {
+            margin: 10px 0;
+        }
+
+        p {
+            font-size: 2rem;
+            color: rgb(37, 37, 37);
+        }
+    }
+
+    .total-likes svg {
+        color: #f91880;
+    }
+
+    .total-rt svg {
+        color: #008000;
+    }
+
     .react-select-container {
         min-width: 450px;
         max-width: 450px;
 
-        @media screen and (max-width: 992px) {
+        @media screen and (max-width: 1224px) {
             min-width: 100%;
             max-width: 100%;
         }
@@ -92,7 +141,7 @@
         align-items: baseline;
         gap: 25px;
 
-        @media screen and (max-width: 992px) {
+        @media screen and (max-width: 1224px) {
             flex-direction: column;
         }
 
@@ -127,12 +176,20 @@
         gap: 15px 35px;
         justify-content: flex-start;
 
+        @media screen and (max-width: 1295px) {
+            justify-content: space-between;
+        }
+
+        @media screen and (max-width: 662px) {
+            justify-content: center;
+        }
+
         ul {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
 
-            @media screen and (max-width: 992px) {
+            @media screen and (max-width: 1224px) {
                 justify-content: center;
                 gap: 5%;
             }
