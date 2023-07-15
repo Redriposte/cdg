@@ -1,0 +1,153 @@
+.card {
+    background-color: #fff;
+    // height: 415px;
+    min-height: 392px;
+    width: 275px;
+    border-radius: 15px;
+    border: 1px solid var(--light-gray);
+    padding: 15px;
+
+    header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+
+        & .header-text {
+            margin-right: auto;
+            margin-left: 10px;
+
+            span {
+                font-weight: bold;
+                font-size: 0.9rem;
+                margin-bottom: 1px;
+                display: inline-block;
+            }
+
+            a {
+                font-size: 0.8rem;
+                color: var(--dark-gray);
+                text-decoration: none;
+            }
+
+            br {
+                margin-bottom: 2px;
+            }
+        }
+
+        img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+        }
+    }
+
+    main {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+
+        [data-blue] {
+            color: var(--blue);
+        }
+
+        p {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            min-height: 60px;
+        }
+
+        .preview-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .preview {
+            width: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 1px solid var(--light-gray);
+            cursor: pointer;
+        }
+
+        svg {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            color: var(--blue);
+            cursor: pointer;
+            transition: transform 80ms ease-in-out;
+
+            &:hover {
+                transform: scale(1.1);
+                filter: contrast(0.9);
+            }
+        }
+
+        time {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+        }
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid var(--dark-gray);
+        opacity: 0.4;
+        margin-top: 10px;
+    }
+
+    .rs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: space-between;
+        cursor: pointer;
+
+        .likes, .rt, .share {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #536471;
+        }
+
+        .likes svg {
+            color: #f91880;
+        }
+
+        .rt svg {
+            color: green;
+        }
+
+        .share svg {
+            color: #536471;
+        }
+    }
+
+    .read-more {
+        border: 1px solid var(--light-gray);
+        display: inline-block;
+        width: 100%;
+        padding: 5px auto;
+        height: 30px;
+        text-align: center;
+        border-radius: 15px;
+        color: var(--blue);
+        font-weight: bold;
+        font-size: 0.9rem;
+        margin-top: 10px;
+
+        &:hover {
+            background-color: var(--blue);
+            border: 1px solid var(--light-gray);
+            color: #fff;
+            filter: contrast(100%);
+            scale: 1;
+        }
+    }
+}

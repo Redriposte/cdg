@@ -1,4 +1,8 @@
 import CreatableSelect from "react-select/creatable";
+import FilterIcon from "./icons/FilterIcon";
+import Tweets from "./Tweets";
+import Card from "./Card";
+import data from '../../data.json';
 
 const colourStyles = {
   control: (styles) => ({
@@ -22,7 +26,7 @@ const colourStyles = {
     textOverflow: "ellipsis",
     maxWidth: "90%",
     whiteSpace: "nowrap",
-    overflow: "hidden"
+    overflow: "hidden",
   }),
 };
 
@@ -81,6 +85,25 @@ const Body = () => {
           />
         </div>
         <button className="btn btn-search shadow">Rechercher</button>
+      </section>
+      <section className="body__filters">
+        <h2>Listes des Tweets.</h2>
+        <ul>
+          <li>
+            <button darkhover="true">
+              <FilterIcon order="desc" /> Likes
+            </button>
+          </li>
+          <li>
+            <button darkhover="true">
+              <FilterIcon order="desc" /> Retweets
+            </button>
+          </li>
+        </ul>
+      </section>
+      <section className="body__tweets">
+            { data.map(c => <Card key={c.id} data={c} />) }
+            {/* <Tweets /> */}
       </section>
     </main>
   );

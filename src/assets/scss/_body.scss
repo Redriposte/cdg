@@ -1,24 +1,46 @@
 .body {
-
     &__header {
         h1 {
             color: var(--dark-gray);
             font-size: 1.1rem;
             margin-top: 5px;
             letter-spacing: -0.2px;
+
+            @media screen and (max-width: 992px) {
+                font-size: 0.9rem;
+            }
         }
 
         h2 {
             font-size: 2rem;
             margin-top: 15px;
             letter-spacing: -1px;
+
+            @media screen and (max-width: 992px) {
+                font-size: 1.3rem;
+            }
         }
+    }
+
+    @media screen and (max-width: 992px) {
+        margin: 35px 30px;
     }
 
     &__search {
         position: relative;
         display: flex;
-        margin-top: 30px;
+        margin-top: 40px;
+        flex-wrap: wrap;
+
+        & .btn-search {
+            height: 55px;
+
+            @media screen and (max-width: 992px) {
+                width: 100%;
+                text-align: center;
+                margin-top: 20px;
+            }
+        }
 
         & input {
             border-radius: 50px;
@@ -28,6 +50,11 @@
             position: relative;
             margin-right: 50px;
             border-radius: 50px;
+
+            @media screen and (max-width: 992px) {
+                width: 100%;
+                margin-right: 0;
+            }
         }
 
         &__input__icon {
@@ -41,6 +68,11 @@
     .react-select-container {
         min-width: 450px;
         max-width: 450px;
+
+        @media screen and (max-width: 992px) {
+            min-width: 100%;
+            max-width: 100%;
+        }
     }
 
     .react-select__control {
@@ -51,5 +83,68 @@
     .react-select__multi-value {
         border-radius: 50px;
         padding: 5px 10px;
+    }
+
+    &__filters {
+        margin-top: 40px;
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 25px;
+
+        @media screen and (max-width: 992px) {
+            flex-direction: column;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+        }
+
+        ul {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 25px;
+
+            li > button {
+                background-color: var(--light-gray);
+                padding: 10px 30px;
+                border-radius: 20px;
+                color: var(--dark-gray);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+             }
+        }
+    }
+
+    &__tweets {
+        margin-top: 40px;
+        padding-bottom: 80px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px 35px;
+        justify-content: flex-start;
+
+        ul {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+
+            @media screen and (max-width: 992px) {
+                justify-content: center;
+                gap: 5%;
+            }
+
+            li {
+                max-width: 275px;
+            }
+        }
+
+        .twitter-tweet {
+            box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.1019607843);
+            border-radius: 25px;
+        }
     }
 }

@@ -1,10 +1,11 @@
 @import 'reset-css';
-@import url('https://fonts.cdnfonts.com/css/roboto');
+// @import url('https://fonts.cdnfonts.com/css/roboto');
 
 :root {
   --bg: #F5F5F5;
   --app-width: 1280px;
   --dark-gray: #7F8C9B;
+  --light-gray: #eaebec;
   --light-piggy: #FADFDC;
   --piggy: #F5B09B;
   --blue: #1D9BF0;
@@ -15,11 +16,16 @@ body {
   width: 100vw;
   height: 100vh;
   font-family: 'Roboto';
+  overflow-x: hidden;
 
   ::selection {
     background-color: var(--piggy);
     color: white;
   }
+}
+
+* {
+  box-sizing: border-box;
 }
 
 #root {
@@ -35,6 +41,10 @@ body {
   box-shadow: 0px 25px 50px -12px #0000001A;
 }
 
+.blue {
+  color: var(--blue);
+}
+
 button {
   all: unset;
   cursor: pointer;
@@ -43,6 +53,18 @@ button {
   &:hover {
     scale: 1.1;
     filter: contrast(120%);
+
+    @media screen and (max-width: 992px) {
+      scale: 1;
+    }
+  }
+  &[darkhover]:hover {
+    scale: 1.1;
+    filter: contrast(90%);
+
+    @media screen and (max-width: 992px) {
+      scale: 1;
+    }
   }
 }
 
@@ -64,6 +86,10 @@ button {
   margin: 0 auto;
   height: 100%;
   max-width: var(--app-width);
+
+  @media screen and (max-width: 992px) {
+    display: inherit;
+  }
 }
 
 .sidenav {
