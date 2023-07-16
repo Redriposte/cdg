@@ -1,6 +1,7 @@
 import CreatableSelect from "react-select/creatable";
 import FilterIcon from "./icons/FilterIcon";
-import Tweets from "./Tweets";
+import { useState, useEffect } from "react";
+import Fuse from 'fuse.js';
 import Card from "./Card";
 import data from '../../data.json';
 
@@ -30,7 +31,52 @@ const colourStyles = {
   }),
 };
 
+function kFormatter(num) {
+  return Math.abs(num) > 999 ? Math.sign(num)*((Math.abs(num)/1000).toFixed(1)) + 'K' : Math.sign(num)*Math.abs(num)
+}
+
+const fuseOptions = {
+  includeScore: true,
+  keys: ['hashtags', 'names', 'content', 'dates', 'createdAt'],
+  useExtendedSearch: true,
+  minMatchCharLength: 4,
+  isCaseSensitive: false,
+  shouldSort: true,
+  threshold: 0.6
+}
+
 const Body = () => {
+  const [dataJsonRaw, setDataJsonRaw] = useState(data);
+  const [dataJson, setDataJson] = useState(data);
+  const [searchWordsList, setSearchWordsList] = useState('');
+
+  const getInputValues = (values) => {
+    if (values) {
+      const searchWords = values.map(v => v.value).join(' | ');
+      setSearchWordsList(s => searchWords);
+    }
+  }
+
+  const fuseSearchTerms = (searchTerms) => {
+    if (searchTerms) {
+      const fuse = new Fuse(dataJson[0].tweets, fuseOptions);
+      const result = fuse.search(searchTerms).map(r => r.item);
+      if(result.length > 0) {
+        setDataJson(s => [ { "tweets": result } ]);
+      } else {
+        setDataJson(s => dataJsonRaw);
+      }
+    } else {
+      setDataJson(s => dataJsonRaw);
+    }
+ }
+
+  useEffect(() => {
+    fuseSearchTerms(searchWordsList);
+  }, [searchWordsList])
+
+
+
   return (
     <main className="body">
       <header className="body__header">
@@ -71,6 +117,12 @@ const Body = () => {
             </svg>
           </div>
           <CreatableSelect
+            onChange={(values) => {
+              const nValues = values.map(v => {
+                return {...v, isHashtag: v.value.startsWith('#')};
+              });
+              getInputValues(nValues);
+            }}
             className="react-select-container"
             classNamePrefix="react-select"
             styles={colourStyles}
@@ -94,7 +146,7 @@ const Body = () => {
             </svg>
             <div className="total-likes-content">
               Total likes
-              <p>12K</p>
+              <p>{kFormatter(dataJson[0].tweets.reduce((acc, t) => acc + t.likes, 0))}</p>
             </div>
           </div>
           <hr className="head-hr" />
@@ -107,7 +159,7 @@ const Body = () => {
             </svg>
             <div className="total-likes-content">
               Total RT
-              <p>20K</p>
+              <p>{kFormatter(dataJson[0].tweets.reduce((acc, t) => acc + t.retweets, 0))}</p>
             </div>
           </div>
         </div>
@@ -128,8 +180,7 @@ const Body = () => {
         </ul>
       </section>
       <section className="body__tweets">
-            { data.map(c => <Card key={c.id} data={c} />) }
-            {/* <Tweets /> */}
+            { dataJson[0].tweets.map(c => <Card key={c.id} data={c} />) }
       </section>
     </main>
   );
