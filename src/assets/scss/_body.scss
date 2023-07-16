@@ -164,6 +164,15 @@
                 align-items: center;
                 gap: 10px;
                 cursor: pointer;
+                border: 1px solid transparent;
+
+                &.active {
+                    border: 1px solid var(--blue);
+                    color: var(--blue);
+                }
+                &.active svg {
+                    color: var(--blue);
+                }
              }
         }
     }

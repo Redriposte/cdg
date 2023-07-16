@@ -2,6 +2,7 @@ import CreatableSelect from "react-select/creatable";
 import FilterIcon from "./icons/FilterIcon";
 import { useState, useEffect } from "react";
 import Fuse from 'fuse.js';
+import orderBy from 'lodash/orderBy';
 import Card from "./Card";
 import data from '../../data.json';
 
@@ -49,10 +50,14 @@ const Body = () => {
   const [dataJsonRaw, setDataJsonRaw] = useState(data);
   const [dataJson, setDataJson] = useState(data);
   const [searchWordsList, setSearchWordsList] = useState('');
+  const [orderByLikes, setOrderByLikes] = useState(false);
+  const [orderByRT, setOrderByRT] = useState(false);
 
   const getInputValues = (values) => {
     if (values) {
       const searchWords = values.map(v => v.value).join(' | ');
+      setOrderByLikes(false);
+      setOrderByRT(false);
       setSearchWordsList(s => searchWords);
     }
   }
@@ -75,7 +80,31 @@ const Body = () => {
     fuseSearchTerms(searchWordsList);
   }, [searchWordsList])
 
+  const reorderByLikes = () => {
+    setOrderByLikes(v => {
+      const b = v = !v;
+      if (b) {
+        setOrderByRT(false);
+        setDataJson(s => [ { "tweets": orderBy(dataJson[0].tweets, 'likes', 'desc') } ]);
+      } else {
+        setDataJson(s => [ { "tweets": orderBy(dataJson[0].tweets, 'id', 'asc') } ]);
+      }
+      return b;
+    });
+  }
 
+  const reorderByRT = () => {
+    setOrderByRT(v => {
+      const b = v = !v;
+      if (b) {
+        setOrderByLikes(false);
+        setDataJson(s => [ { "tweets": orderBy(dataJson[0].tweets, 'retweets', 'desc') } ]);
+      } else {
+        setDataJson(s => [ { "tweets": orderBy(dataJson[0].tweets, 'id', 'asc') } ]);
+      }
+      return b;
+    });
+  }
 
   return (
     <main className="body">
@@ -146,7 +175,7 @@ const Body = () => {
             </svg>
             <div className="total-likes-content">
               Total likes
-              <p>{kFormatter(dataJson[0].tweets.reduce((acc, t) => acc + t.likes, 0))}</p>
+              <p>{kFormatter(dataJsonRaw[0].tweets.reduce((acc, t) => acc + t.likes, 0))}</p>
             </div>
           </div>
           <hr className="head-hr" />
@@ -159,7 +188,7 @@ const Body = () => {
             </svg>
             <div className="total-likes-content">
               Total RT
-              <p>{kFormatter(dataJson[0].tweets.reduce((acc, t) => acc + t.retweets, 0))}</p>
+              <p>{kFormatter(dataJsonRaw[0].tweets.reduce((acc, t) => acc + t.retweets, 0))}</p>
             </div>
           </div>
         </div>
@@ -168,12 +197,16 @@ const Body = () => {
         <h2>Listes des Tweets.</h2>
         <ul>
           <li>
-            <button darkhover="true">
-              <FilterIcon order="desc" /> Likes
+            <button darkhover="true" onClick={() => reorderByLikes()}
+              className={orderByLikes ? 'active': ''}
+              >
+              <FilterIcon /> Likes
             </button>
           </li>
           <li>
-            <button darkhover="true">
+            <button darkhover="true" onClick={() => reorderByRT()}
+            className={orderByRT ? 'active': ''}
+            >
               <FilterIcon order="desc" /> Retweets
             </button>
           </li>
