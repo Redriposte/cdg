@@ -1,10 +1,12 @@
 import CreatableSelect from "react-select/creatable";
 import FilterIcon from "./icons/FilterIcon";
 import { useState, useEffect } from "react";
-import Fuse from 'fuse.js';
-import orderBy from 'lodash/orderBy';
+import ReactPaginate from "react-paginate";
+import Fuse from "fuse.js";
+import orderBy from "lodash/orderBy";
+import slice from "lodash/slice";
 import Card from "./Card";
-import data from '../../data.json';
+import data from "../../data.json";
 
 const colourStyles = {
   control: (styles) => ({
@@ -33,78 +35,99 @@ const colourStyles = {
 };
 
 function kFormatter(num) {
-  return Math.abs(num) > 999 ? Math.sign(num)*((Math.abs(num)/1000).toFixed(1)) + 'K' : Math.sign(num)*Math.abs(num)
+  return Math.abs(num) > 999
+    ? Math.sign(num) * (Math.abs(num) / 1000).toFixed(1) + "K"
+    : Math.sign(num) * Math.abs(num);
 }
 
 const fuseOptions = {
   includeScore: true,
-  keys: ['hashtags', 'names', 'content', 'dates', 'createdAt'],
+  keys: ["hashtags", "names", "content", "dates", "createdAt"],
   useExtendedSearch: true,
   minMatchCharLength: 4,
   isCaseSensitive: false,
   shouldSort: true,
-  threshold: 0.6
-}
+  threshold: 0.6,
+};
 
 const Body = () => {
   const [dataJsonRaw, setDataJsonRaw] = useState(data);
   const [dataJson, setDataJson] = useState(data);
-  const [searchWordsList, setSearchWordsList] = useState('');
+  const [searchWordsList, setSearchWordsList] = useState("");
   const [orderByLikes, setOrderByLikes] = useState(false);
   const [orderByRT, setOrderByRT] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 8;
 
   const getInputValues = (values) => {
     if (values) {
-      const searchWords = values.map(v => v.value).join(' | ');
+      const searchWords = values.map((v) => v.value).join(" | ");
       setOrderByLikes(false);
       setOrderByRT(false);
-      setSearchWordsList(s => searchWords);
+      setSearchWordsList((s) => searchWords);
     }
-  }
+  };
 
   const fuseSearchTerms = (searchTerms) => {
     if (searchTerms) {
       const fuse = new Fuse(dataJson[0].tweets, fuseOptions);
-      const result = fuse.search(searchTerms).map(r => r.item);
-      if(result.length > 0) {
-        setDataJson(s => [ { "tweets": result } ]);
+      const result = fuse.search(searchTerms).map((r) => r.item);
+      if (result.length > 0) {
+        setDataJson((s) => [{ tweets: result }]);
       } else {
-        setDataJson(s => dataJsonRaw);
+        setDataJson((s) => dataJsonRaw);
       }
+      resetPage();
     } else {
-      setDataJson(s => dataJsonRaw);
+      setDataJson((s) => dataJsonRaw);
     }
- }
+  };
 
   useEffect(() => {
     fuseSearchTerms(searchWordsList);
-  }, [searchWordsList])
+  }, [searchWordsList]);
 
   const reorderByLikes = () => {
-    setOrderByLikes(v => {
-      const b = v = !v;
+    setOrderByLikes((v) => {
+      const b = (v = !v);
       if (b) {
         setOrderByRT(false);
-        setDataJson(s => [ { "tweets": orderBy(dataJson[0].tweets, 'likes', 'desc') } ]);
+        setDataJson((s) => [
+          { tweets: orderBy(dataJson[0].tweets, "likes", "desc") },
+        ]);
       } else {
-        setDataJson(s => [ { "tweets": orderBy(dataJson[0].tweets, 'id', 'asc') } ]);
+        setDataJson((s) => [
+          { tweets: orderBy(dataJson[0].tweets, "id", "asc") },
+        ]);
       }
       return b;
     });
-  }
+  };
 
   const reorderByRT = () => {
-    setOrderByRT(v => {
-      const b = v = !v;
+    setOrderByRT((v) => {
+      const b = (v = !v);
       if (b) {
         setOrderByLikes(false);
-        setDataJson(s => [ { "tweets": orderBy(dataJson[0].tweets, 'retweets', 'desc') } ]);
+        setDataJson((s) => [
+          { tweets: orderBy(dataJson[0].tweets, "retweets", "desc") },
+        ]);
       } else {
-        setDataJson(s => [ { "tweets": orderBy(dataJson[0].tweets, 'id', 'asc') } ]);
+        setDataJson((s) => [
+          { tweets: orderBy(dataJson[0].tweets, "id", "asc") },
+        ]);
       }
       return b;
     });
-  }
+  };
+
+  const getCurrentPage = (page) => {
+    setCurrentPage(page);
+  };
+
+  const resetPage = () => {
+    setCurrentPage(0);
+  };
 
   return (
     <main className="body">
@@ -147,8 +170,8 @@ const Body = () => {
           </div>
           <CreatableSelect
             onChange={(values) => {
-              const nValues = values.map(v => {
-                return {...v, isHashtag: v.value.startsWith('#')};
+              const nValues = values.map((v) => {
+                return { ...v, isHashtag: v.value.startsWith("#") };
               });
               getInputValues(nValues);
             }}
@@ -169,26 +192,76 @@ const Body = () => {
         <div className="totals">
           <hr className="head-hr" />
           <div className="total-likes">
-            <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17.7188 13.5V16.875C15.3934 16.875 13.5 18.7667 13.5 21.0938H10.125C10.125 16.9071 13.5321 13.5 17.7188 13.5Z" fill="currentColor"/>
-              <path d="M36.2812 8.4375C32.7105 8.4375 29.3743 9.92419 27 12.4976C24.6257 9.92419 21.2895 8.4375 17.7188 8.4375C10.7392 8.4375 5.0625 14.0619 5.0625 21.0938C5.0625 36.3521 27 45.5625 27 45.5625C27 45.5625 48.9375 36.3521 48.9375 21.0938C48.9375 14.0619 43.2607 8.4375 36.2812 8.4375ZM27 41.8449C22.5754 39.6917 8.4375 31.9579 8.4375 21.0938C8.4375 15.9756 12.6006 11.8125 17.7188 11.8125C20.3344 11.8125 22.7509 12.8689 24.5194 14.7859L25.7597 16.1308H28.2403L29.4806 14.7859C31.2491 12.8689 33.6656 11.8125 36.2812 11.8125C41.3994 11.8125 45.5625 15.9756 45.5625 21.0938C45.5625 31.9579 31.4246 39.6917 27 41.8449Z" fill="currentColor"/>
+            <svg
+              width="54"
+              height="54"
+              viewBox="0 0 54 54"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M17.7188 13.5V16.875C15.3934 16.875 13.5 18.7667 13.5 21.0938H10.125C10.125 16.9071 13.5321 13.5 17.7188 13.5Z"
+                fill="currentColor"
+              />
+              <path
+                d="M36.2812 8.4375C32.7105 8.4375 29.3743 9.92419 27 12.4976C24.6257 9.92419 21.2895 8.4375 17.7188 8.4375C10.7392 8.4375 5.0625 14.0619 5.0625 21.0938C5.0625 36.3521 27 45.5625 27 45.5625C27 45.5625 48.9375 36.3521 48.9375 21.0938C48.9375 14.0619 43.2607 8.4375 36.2812 8.4375ZM27 41.8449C22.5754 39.6917 8.4375 31.9579 8.4375 21.0938C8.4375 15.9756 12.6006 11.8125 17.7188 11.8125C20.3344 11.8125 22.7509 12.8689 24.5194 14.7859L25.7597 16.1308H28.2403L29.4806 14.7859C31.2491 12.8689 33.6656 11.8125 36.2812 11.8125C41.3994 11.8125 45.5625 15.9756 45.5625 21.0938C45.5625 31.9579 31.4246 39.6917 27 41.8449Z"
+                fill="currentColor"
+              />
             </svg>
             <div className="total-likes-content">
               Total likes
-              <p>{kFormatter(dataJsonRaw[0].tweets.reduce((acc, t) => acc + t.likes, 0))}</p>
+              <p>
+                {kFormatter(
+                  dataJsonRaw[0].tweets.reduce((acc, t) => acc + t.likes, 0)
+                )}
+              </p>
             </div>
           </div>
           <hr className="head-hr" />
           <div className="total-rt">
-            <svg width="52" height="37" viewBox="0 0 52 37" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M34 26.2857L42 34.3809L50 26.2857" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M23.3333 2H31.3333C37.2244 2 42 6.83248 42 12.7936V34.3809" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M18 10.0952L10 2L2 10.0952" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M28.6667 34.3809H20.6667C14.7756 34.3809 10 29.5485 10 23.5873V2" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg
+              width="52"
+              height="37"
+              viewBox="0 0 52 37"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M34 26.2857L42 34.3809L50 26.2857"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M23.3333 2H31.3333C37.2244 2 42 6.83248 42 12.7936V34.3809"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M18 10.0952L10 2L2 10.0952"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M28.6667 34.3809H20.6667C14.7756 34.3809 10 29.5485 10 23.5873V2"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
             <div className="total-likes-content">
               Total RT
-              <p>{kFormatter(dataJsonRaw[0].tweets.reduce((acc, t) => acc + t.retweets, 0))}</p>
+              <p>
+                {kFormatter(
+                  dataJsonRaw[0].tweets.reduce((acc, t) => acc + t.retweets, 0)
+                )}
+              </p>
             </div>
           </div>
         </div>
@@ -197,26 +270,97 @@ const Body = () => {
         <h2>Listes des Tweets.</h2>
         <ul>
           <li>
-            <button darkhover="true" onClick={() => reorderByLikes()}
-              className={orderByLikes ? 'active': ''}
-              >
+            <button
+              darkhover="true"
+              onClick={() => reorderByLikes()}
+              className={orderByLikes ? "active" : ""}
+            >
               <FilterIcon /> Likes
             </button>
           </li>
           <li>
-            <button darkhover="true" onClick={() => reorderByRT()}
-            className={orderByRT ? 'active': ''}
+            <button
+              darkhover="true"
+              onClick={() => reorderByRT()}
+              className={orderByRT ? "active" : ""}
             >
               <FilterIcon order="desc" /> Retweets
             </button>
           </li>
         </ul>
       </section>
-      <section className="body__tweets">
-            { dataJson[0].tweets.map(c => <Card key={c.id} data={c} />) }
-      </section>
+      <PaginatedItems
+        itemsPerPage={itemsPerPage}
+        getCurrentPage={getCurrentPage}
+        totalPage={dataJson[0].tweets.length}
+        currentPage={currentPage}
+      >
+        <section className="body__tweets">
+          {slice(
+            dataJson[0].tweets.map((c) => <Card key={c.id} data={c} />),
+            currentPage * itemsPerPage,
+            currentPage * itemsPerPage + itemsPerPage
+          )}
+        </section>
+      </PaginatedItems>
     </main>
   );
 };
+
+function PaginatedItems({ children, itemsPerPage, getCurrentPage, totalPage, currentPage }) {
+  // We start with an empty list of items.
+  // const [currentItems, setCurrentItems] = useState(null);
+  const [pageCount, setPageCount] = useState(
+    Math.ceil(totalPage / itemsPerPage)
+  );
+  // Here we use item offsets; we could also use page offsets
+  // following the API or data you're working with.
+  const [itemOffset, setItemOffset] = useState(0);
+
+  useEffect(() => {
+    // Fetch items from another resources.
+    const endOffset = itemOffset + itemsPerPage;
+    console.log(`Loading items from ${itemOffset} to ${endOffset}`);
+    // setCurrentItems(items.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(totalPage / itemsPerPage));
+  }, [itemOffset, itemsPerPage, totalPage, currentPage]);
+
+  // Invoke when user click to request another page.
+  const handlePageClick = (event) => {
+    const newOffset = (event.selected * itemsPerPage) % totalPage;
+    console.log(
+      `User requested page number ${event.selected}, which is offset ${newOffset}`
+    );
+    getCurrentPage(event.selected);
+    setItemOffset(newOffset);
+  };
+
+  return (
+    <>
+      <ReactPaginate
+        previousLabel="⇠"
+        nextLabel="⇢"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={0}
+        marginPagesDisplayed={0}
+        pageCount={pageCount}
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakLabel="..."
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        containerClassName="pagination"
+        activeClassName="active"
+        renderOnZeroPageCount={null}
+        forcePage={currentPage}
+      />
+      {children}
+    </>
+  );
+}
 
 export default Body;

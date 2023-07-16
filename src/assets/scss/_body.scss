@@ -214,3 +214,48 @@
         }
     }
 }
+
+.pagination {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 20px;
+
+    .page-item.disabled {
+        cursor: not-allowed;
+        opacity: 0.3;
+    }
+
+    .page-item {
+        width: 25px;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        color: var(--blue);
+        cursor: pointer;
+    }
+
+    .page-item:not(.active) {
+
+        &:hover {
+            background-color: var(--light-gray);
+        }
+    }
+
+    .active {
+        width: 25px;
+        aspect-ratio: 1/1;
+        background-color: var(--light-gray);
+        color: var(--dark-gray);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.9rem;
+        font-weight: bold;
+        cursor: default;
+    }
+}
