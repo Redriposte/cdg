@@ -36,6 +36,10 @@
         margin-top: 40px;
         flex-wrap: wrap;
 
+        @media screen and (max-width: 727px) {
+            gap: 20px;
+        }
+
         & .btn-search {
             height: 55px;
 
@@ -90,7 +94,8 @@
         }
     }
 
-    .total-likes, .total-rt {
+    .total-likes,
+    .total-rt {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -153,9 +158,12 @@
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
-            gap: 25px;
+            gap: 15px;
+            @media screen and (max-width: 727px) {
+                flex-direction: column;
+            }
 
-            li > button {
+            li>button {
                 background-color: var(--light-gray);
                 padding: 10px 30px;
                 border-radius: 20px;
@@ -170,15 +178,16 @@
                     border: 1px solid var(--blue);
                     color: var(--blue);
                 }
+
                 &.active svg {
                     color: var(--blue);
                 }
-             }
+            }
         }
     }
 
     &__tweets {
-        margin-top: 40px;
+        // margin-top: 40px;
         padding-bottom: 80px;
         display: flex;
         flex-wrap: wrap;
@@ -215,11 +224,46 @@
     }
 }
 
+.btn-result {
+    background-color: transparent !important;
+    border: 1px solid var(--blue) !important;
+    color: var(--blue) !important;
+    position: relative;
+
+    &:hover::after {
+        content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='0 0 512 512'%3E%3Cpath fill='%231D9BF0' fill-rule='evenodd' d='M426.667 106.667v42.666L358 149.33c36.077 31.659 58.188 77.991 58.146 128.474-.065 78.179-53.242 146.318-129.063 165.376-75.82 19.058-154.895-15.838-191.92-84.695C58.142 289.63 72.638 204.42 130.348 151.68a85.333 85.333 0 0 0 33.28 30.507 124.587 124.587 0 0 0-46.294 97.066c1.05 69.942 58.051 126.088 128 126.08 64.072 1.056 118.709-46.195 126.906-109.749 6.124-47.483-15.135-92.74-52.237-118.947L320 256h-42.667V106.667h149.334ZM202.667 64c23.564 0 42.666 19.103 42.666 42.667s-19.102 42.666-42.666 42.666c-23.564 0-42.667-19.102-42.667-42.666C160 83.103 179.103 64 202.667 64Z'/%3E%3C/svg%3E");
+        background-color: white;
+        color: red;
+        border-radius: 41px;
+        font-size: 0.85rem;
+        width: 5px;
+        position: absolute;
+        top: 0px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        display: flex;
+        margin: 0 auto;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
 .pagination {
     display: flex;
     justify-content: end;
     align-items: center;
     gap: 20px;
+    transform: translateY(-30px);
+    width: 20%;
+    margin-left: 80%;
+    @media screen and (max-width: 727px) {
+        width: 40%;
+        margin-left: 60%;
+    }
 
     .page-item.disabled {
         cursor: not-allowed;
@@ -258,4 +302,53 @@
         font-weight: bold;
         cursor: default;
     }
+}
+
+.DatePicker {
+    display: flex;
+    @media screen and (max-width: 727px) {
+        width: 100%;
+    }
+}
+
+.DatePicker__input {
+    background: #fff;
+    border: 1px solid hsl(0, 0%, 80%);
+    padding: 0.4em 0.8em;
+    font-family: inherit;
+    text-align: center;
+    font-size: 1rem;
+    width: 235px;
+    color: #808080;
+    box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.1019607843);
+    @media screen and (max-width: 727px) {
+        height: 55px;
+        width: 100%;
+        text-align: start;
+        padding-left: 50px;
+    }
+}
+
+.blueDay:not(.-selectedStart):not(.-selectedBetween):not(.-selectedEnd):not(.-selected) {
+    border: 1px dashed var(--blue) !important;
+    position: relative;
+}
+
+.reset-section {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+.reset {
+    background-color: var(--blue);
+    padding: 10px 30px;
+    border-radius: 20px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border: 1px solid transparent;
 }

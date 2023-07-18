@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import CreatableSelect from "react-select/creatable";
 import FilterIcon from "./icons/FilterIcon";
 import { useState, useEffect } from "react";
@@ -6,7 +7,108 @@ import Fuse from "fuse.js";
 import orderBy from "lodash/orderBy";
 import slice from "lodash/slice";
 import Card from "./Card";
+import "react-modern-calendar-datepicker/lib/DatePicker.css";
+import DatePicker from "@taak/react-modern-calendar-datepicker";
+import isWithinInterval from "date-fns/isWithinInterval";
+import { format, addDays } from "date-fns";
 import data from "../../data.json";
+
+const myCustomLocale = {
+  // months list by order
+  months: [
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
+  ],
+
+  // week days by order
+  weekDays: [
+    {
+      name: "Dimanche", // used for accessibility
+      short: "D", // displayed at the top of days' rows
+      isWeekend: true, // is it a formal weekend or not?
+    },
+    {
+      name: "Lundi",
+      short: "L",
+    },
+    {
+      name: "Mardi",
+      short: "M",
+    },
+    {
+      name: "Mercredi",
+      short: "M",
+    },
+    {
+      name: "Jeudi",
+      short: "J",
+    },
+    {
+      name: "Vendredi",
+      short: "V",
+    },
+    {
+      name: "Samedi",
+      short: "S",
+      isWeekend: true,
+    },
+  ],
+
+  // just play around with this number between 0 and 6
+  weekStartingIndex: 0,
+
+  // return a { year: number, month: number, day: number } object
+  getToday(gregorainTodayObject) {
+    return gregorainTodayObject;
+  },
+
+  // return a native JavaScript date here
+  toNativeDate(date) {
+    return new Date(date.year, date.month - 1, date.day);
+  },
+
+  // return a number for date's month length
+  getMonthLength(date) {
+    return new Date(date.year, date.month, 0).getDate();
+  },
+
+  // return a transformed digit to your locale
+  transformDigit(digit) {
+    return digit;
+  },
+
+  // texts in the date picker
+  nextMonth: "Mois suivant",
+  previousMonth: "Mois précédent",
+  openMonthSelector: "Ouvrir Mois Sélection",
+  openYearSelector: "Ouvrir Année Sélection",
+  closeMonthSelector: "Fermer Mois Sélection",
+  closeYearSelector: "Fermer Année Sélection",
+  defaultPlaceholder: "Sélection...",
+
+  // for input range value
+  from: "Du",
+  to: "au",
+
+  // used for input value when multi dates are selected
+  digitSeparator: ",",
+
+  // if your provide -2 for example, year will be 2 digited
+  yearLetterSkip: 0,
+
+  // is your language rtl or ltr?
+  isRtl: false,
+};
 
 const colourStyles = {
   control: (styles) => ({
@@ -47,24 +149,38 @@ const fuseOptions = {
   minMatchCharLength: 4,
   isCaseSensitive: false,
   shouldSort: true,
-  threshold: 0.6,
+  threshold: 0.4,
 };
 
 const Body = () => {
+  const creatableSelectInputRef = useRef(null);
   const [dataJsonRaw, setDataJsonRaw] = useState(data);
   const [dataJson, setDataJson] = useState(data);
+
   const [searchWordsList, setSearchWordsList] = useState("");
   const [orderByLikes, setOrderByLikes] = useState(false);
   const [orderByRT, setOrderByRT] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 8;
+  const [selectedDayRange, setSelectedDayRange] = useState({
+    from: null,
+    to: null,
+  });
 
   const getInputValues = (values) => {
     if (values) {
-      const searchWords = values.map((v) => v.value).join(" | ");
+      const searchWords = values.map((v) => v.value).join("|");
       setOrderByLikes(false);
       setOrderByRT(false);
+      console.log(searchWords);
       setSearchWordsList((s) => searchWords);
+      fuseSearchTerms(searchWords);
+      if(searchWords === '') {
+        setSelectedDayRange({
+          from: null,
+          to: null,
+        })
+      }
     }
   };
 
@@ -72,6 +188,7 @@ const Body = () => {
     if (searchTerms) {
       const fuse = new Fuse(dataJson[0].tweets, fuseOptions);
       const result = fuse.search(searchTerms).map((r) => r.item);
+      console.log(result);
       if (result.length > 0) {
         setDataJson((s) => [{ tweets: result }]);
       } else {
@@ -85,7 +202,7 @@ const Body = () => {
 
   useEffect(() => {
     fuseSearchTerms(searchWordsList);
-  }, [searchWordsList]);
+  }, [searchWordsList, dataJsonRaw]);
 
   const reorderByLikes = () => {
     setOrderByLikes((v) => {
@@ -127,6 +244,49 @@ const Body = () => {
 
   const resetPage = () => {
     setCurrentPage(0);
+  };
+
+  const resetAll = () => {
+    setDataJsonRaw(data);
+    setSelectedDayRange({
+      from: null,
+      to: null,
+    });
+    setOrderByLikes(false);
+    setOrderByRT(false);
+    if(creatableSelectInputRef?.current) {
+      creatableSelectInputRef.current.popValue()
+    }
+    setCurrentPage(0);
+  };
+
+  const filterByDate = (d) => {
+    if (d?.from && d?.to && searchWordsList === "") {
+      const dateFiltered = dataJsonRaw[0].tweets.filter((t) => {
+        return isWithinInterval(new Date(t.createdAt), {
+          start: new Date(`${d.from.year}-${d.from.month}-${d.from.day}`),
+          end: new Date(`${d.to.year}-${d.to.month}-${d.to.day + 1}`),
+        });
+      });
+      setDataJsonRaw([
+        {
+          tweets: dateFiltered,
+        },
+      ]);
+    } else if(d?.from && d?.to && searchWordsList !== ""){
+      const dateFiltered = dataJsonBeforeFilter[0].tweets.filter((t) => {
+        return isWithinInterval(new Date(t.createdAt), {
+          start: new Date(`${d.from.year}-${d.from.month}-${d.from.day}`),
+          end: new Date(`${d.to.year}-${d.to.month}-${d.to.day + 1}`),
+        });
+      });
+      setDataJson([
+        {
+          tweets: dateFiltered,
+        },
+      ]);
+    }
+    setSelectedDayRange(d);
   };
 
   return (
@@ -175,6 +335,7 @@ const Body = () => {
               });
               getInputValues(nValues);
             }}
+            ref={creatableSelectInputRef}
             className="react-select-container"
             classNamePrefix="react-select"
             styles={colourStyles}
@@ -188,7 +349,60 @@ const Body = () => {
             placeholder="Recherche par nom, prénom, hashtag..."
           />
         </div>
-        <button className="btn btn-search shadow">Rechercher</button>
+        <DatePicker
+          value={selectedDayRange}
+          onChange={filterByDate}
+          inputPlaceholder="Filtrer par date"
+          locale={myCustomLocale}
+          colorPrimary="var(--blue)" // added this
+          colorPrimaryLight="var(--light-gray)"
+          maximumDate={{
+            year: format(addDays(new Date(), 1), "yyyy"),
+            month: format(addDays(new Date(), 1), "MM"),
+            day: format(addDays(new Date(), 1), "dd"),
+          }}
+          formatInputText={() => {
+            if (selectedDayRange?.from && selectedDayRange?.to) {
+              return `Du ${selectedDayRange?.from.day}/${selectedDayRange?.from.month}/${selectedDayRange?.from.year} au ${selectedDayRange?.to.day}/${selectedDayRange?.to.month}/${selectedDayRange?.to.year}`;
+            }
+          }}
+          customDaysClassName={[
+            ...new Set(dataJsonRaw[0].tweets.map((t) => t.createdAt).flat()),
+          ].map((date) => {
+            const ndate = date.split("T")[0];
+            return {
+              year: Number(ndate.split("-")[0]),
+              month: Number(ndate.split("-")[1]),
+              day: Number(ndate.split("-")[2]),
+              className: "blueDay",
+            };
+          })}
+          renderFooter={() => (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "1rem 2rem",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  resetAll();
+                }}
+                style={{
+                  border: "1px solid var(--blue)",
+                  color: "var(--blue)",
+                  borderRadius: "0.5rem",
+                  padding: "0.5rem 2rem",
+                  fontSize: "0.9rem",
+                }}
+              >
+                Réinitialiser !
+              </button>
+            </div>
+          )}
+        />
         <div className="totals">
           <hr className="head-hr" />
           <div className="total-likes">
@@ -212,7 +426,7 @@ const Body = () => {
               Total likes
               <p>
                 {kFormatter(
-                  dataJsonRaw[0].tweets.reduce((acc, t) => acc + t.likes, 0)
+                  data[0].tweets.reduce((acc, t) => acc + t.likes, 0)
                 )}
               </p>
             </div>
@@ -259,7 +473,7 @@ const Body = () => {
               Total RT
               <p>
                 {kFormatter(
-                  dataJsonRaw[0].tweets.reduce((acc, t) => acc + t.retweets, 0)
+                  data[0].tweets.reduce((acc, t) => acc + t.retweets, 0)
                 )}
               </p>
             </div>
@@ -287,6 +501,21 @@ const Body = () => {
               <FilterIcon order="desc" /> Retweets
             </button>
           </li>
+          {
+            dataJson[0].tweets.length >= 0 &&
+            dataJson[0].tweets.length !== data[0].tweets.length && (
+              <li>
+                <button darkhover="true" className="btn-result" onClick={() => resetAll()}>
+                  {dataJson[0].tweets.length} Résultat{dataJson[0].tweets.length > 1 ? 's' : ''}
+                </button>
+              </li>
+            )}
+          {searchWordsList !== "" &&
+            dataJson[0].tweets.length === data[0].tweets.length && (
+              <li>
+                <button darkhover="true" className="btn-result" onClick={() => resetAll()} >0 Résultat</button>
+              </li>
+            )}
         </ul>
       </section>
       <PaginatedItems
@@ -303,11 +532,26 @@ const Body = () => {
           )}
         </section>
       </PaginatedItems>
+
+      {dataJsonRaw[0].tweets.length === 0 && (
+        <section className="reset-section">
+          Aucun résultat pour cette recherche{" "}
+          <button className="btn reset" onClick={() => resetAll()}>
+            Réinitialiser les filtres
+          </button>
+        </section>
+      )}
     </main>
   );
 };
 
-function PaginatedItems({ children, itemsPerPage, getCurrentPage, totalPage, currentPage }) {
+function PaginatedItems({
+  children,
+  itemsPerPage,
+  getCurrentPage,
+  totalPage,
+  currentPage,
+}) {
   // We start with an empty list of items.
   // const [currentItems, setCurrentItems] = useState(null);
   const [pageCount, setPageCount] = useState(
@@ -318,19 +562,12 @@ function PaginatedItems({ children, itemsPerPage, getCurrentPage, totalPage, cur
   const [itemOffset, setItemOffset] = useState(0);
 
   useEffect(() => {
-    // Fetch items from another resources.
     const endOffset = itemOffset + itemsPerPage;
-    console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-    // setCurrentItems(items.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(totalPage / itemsPerPage));
   }, [itemOffset, itemsPerPage, totalPage, currentPage]);
 
-  // Invoke when user click to request another page.
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % totalPage;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`
-    );
     getCurrentPage(event.selected);
     setItemOffset(newOffset);
   };
