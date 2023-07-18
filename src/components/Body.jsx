@@ -144,17 +144,19 @@ function kFormatter(num) {
 
 const fuseOptions = {
   includeScore: true,
-  keys: ["hashtags", "names", "content", "dates", "createdAt"],
+  keys: ["names", "content", "hashtags"],
   useExtendedSearch: true,
   minMatchCharLength: 4,
   isCaseSensitive: false,
   shouldSort: true,
-  threshold: 0.4,
+  threshold: 0.5,
 };
 
 const Body = () => {
   const creatableSelectInputRef = useRef(null);
-  const [dataJsonRaw, setDataJsonRaw] = useState(data);
+  const [dataJsonRaw, setDataJsonRaw] = useState([{
+    tweets: data[0].tweets.sort((d1, d2) => new Date(d2.createdAt).getTime() - new Date(d1.createdAt).getTime())
+  }]);
   const [dataJson, setDataJson] = useState(data);
 
   const [searchWordsList, setSearchWordsList] = useState("");
@@ -169,10 +171,10 @@ const Body = () => {
 
   const getInputValues = (values) => {
     if (values) {
-      const searchWords = values.map((v) => v.value).join("|");
+      const searchWords = values.map((v) => v.value.replace(/\s/g, '')).join("|");
       setOrderByLikes(false);
       setOrderByRT(false);
-      console.log(searchWords);
+
       setSearchWordsList((s) => searchWords);
       fuseSearchTerms(searchWords);
       if(searchWords === '') {
@@ -181,16 +183,18 @@ const Body = () => {
           to: null,
         })
       }
+    } else {
+      setDataJson((s) => dataJsonRaw);
     }
   };
 
   const fuseSearchTerms = (searchTerms) => {
     if (searchTerms) {
-      const fuse = new Fuse(dataJson[0].tweets, fuseOptions);
-      const result = fuse.search(searchTerms).map((r) => r.item);
-      console.log(result);
+      const fuse = new Fuse(data[0].tweets, fuseOptions);
+      const result = fuse.search(searchTerms).map((r) => ({...r.item, score: r.score}));
+
       if (result.length > 0) {
-        setDataJson((s) => [{ tweets: result }]);
+        setDataJson((s) => [{ tweets: result.sort((a, b) => b-a) }]);
       } else {
         setDataJson((s) => dataJsonRaw);
       }
@@ -204,38 +208,54 @@ const Body = () => {
     fuseSearchTerms(searchWordsList);
   }, [searchWordsList, dataJsonRaw]);
 
-  const reorderByLikes = () => {
-    setOrderByLikes((v) => {
-      const b = (v = !v);
-      if (b) {
-        setOrderByRT(false);
+  const reorderByLikes = (v) => {
+    const b = (v = !v);
+    setOrderByRT(false);
+    if (dataJson[0].tweets.length === data[0].tweets.length) {
+      if(b) {
         setDataJson((s) => [
-          { tweets: orderBy(dataJson[0].tweets, "likes", "desc") },
+          { tweets: orderBy(dataJsonRaw[0].tweets, "likes", "desc") },
         ]);
       } else {
         setDataJson((s) => [
-          { tweets: orderBy(dataJson[0].tweets, "id", "asc") },
+          { tweets: dataJsonRaw[0].tweets.sort((d1, d2) => new Date(d2.createdAt).getTime() - new Date(d1.createdAt).getTime()) },
         ]);
       }
-      return b;
-    });
+    } else {
+        if (b) {
+          setDataJson((s) => [
+            { tweets: orderBy(dataJson[0].tweets, "likes", "desc") },
+          ]);
+        } else {
+          fuseSearchTerms(searchWordsList);
+        }
+    }
+    setOrderByLikes(b);
   };
 
-  const reorderByRT = () => {
-    setOrderByRT((v) => {
-      const b = (v = !v);
-      if (b) {
-        setOrderByLikes(false);
+  const reorderByRT = (v) => {
+    const b = (v = !v);
+    setOrderByLikes(false);
+    if (dataJson[0].tweets.length === data[0].tweets.length) {
+      if(b) {
         setDataJson((s) => [
-          { tweets: orderBy(dataJson[0].tweets, "retweets", "desc") },
+          { tweets: orderBy(dataJsonRaw[0].tweets, "retweets", "desc") },
         ]);
       } else {
         setDataJson((s) => [
-          { tweets: orderBy(dataJson[0].tweets, "id", "asc") },
+          { tweets: dataJsonRaw[0].tweets.sort((d1, d2) => new Date(d2.createdAt).getTime() - new Date(d1.createdAt).getTime()) },
         ]);
       }
-      return b;
-    });
+    } else {
+        if (b) {
+          setDataJson((s) => [
+            { tweets: orderBy(dataJson[0].tweets, "retweets", "desc") },
+          ]);
+        } else {
+          fuseSearchTerms(searchWordsList);
+        }
+    }
+    setOrderByRT(b);
   };
 
   const getCurrentPage = (page) => {
@@ -247,7 +267,9 @@ const Body = () => {
   };
 
   const resetAll = () => {
-    setDataJsonRaw(data);
+    setDataJsonRaw([{
+      tweets: data[0].tweets.sort((d1, d2) => new Date(d2.createdAt).getTime() - new Date(d1.createdAt).getTime())
+    }]);
     setSelectedDayRange({
       from: null,
       to: null,
@@ -255,13 +277,14 @@ const Body = () => {
     setOrderByLikes(false);
     setOrderByRT(false);
     if(creatableSelectInputRef?.current) {
-      creatableSelectInputRef.current.popValue()
+      creatableSelectInputRef.current.clearValue()
     }
     setCurrentPage(0);
   };
 
   const filterByDate = (d) => {
-    if (d?.from && d?.to && searchWordsList === "") {
+    if ((d?.from && d?.to) && searchWordsList === "" && (dataJson[0].tweets.length === data[0].tweets.length)) {
+      console.log("EMPTY");
       const dateFiltered = dataJsonRaw[0].tweets.filter((t) => {
         return isWithinInterval(new Date(t.createdAt), {
           start: new Date(`${d.from.year}-${d.from.month}-${d.from.day}`),
@@ -273,18 +296,19 @@ const Body = () => {
           tweets: dateFiltered,
         },
       ]);
-    } else if(d?.from && d?.to && searchWordsList !== ""){
-      const dateFiltered = dataJsonBeforeFilter[0].tweets.filter((t) => {
-        return isWithinInterval(new Date(t.createdAt), {
-          start: new Date(`${d.from.year}-${d.from.month}-${d.from.day}`),
-          end: new Date(`${d.to.year}-${d.to.month}-${d.to.day + 1}`),
-        });
-      });
-      setDataJson([
-        {
-          tweets: dateFiltered,
-        },
-      ]);
+    } else if((d?.from && d?.to) && searchWordsList !== "" && dataJson[0].tweets.length > 1) {
+      console.log("FULL", searchWordsList);
+      // const dateFiltered = dataJson[0].tweets.filter((t) => {
+      //   return isWithinInterval(new Date(t.createdAt), {
+      //     start: new Date(`${d.from.year}-${d.from.month}-${d.from.day}`),
+      //     end: new Date(`${d.to.year}-${d.to.month}-${d.to.day + 1}`),
+      //   });
+      // });
+      // setDataJson([
+      //   {
+      //     tweets: dateFiltered,
+      //   },
+      // ]);
     }
     setSelectedDayRange(d);
   };
@@ -486,7 +510,7 @@ const Body = () => {
           <li>
             <button
               darkhover="true"
-              onClick={() => reorderByLikes()}
+              onClick={() => reorderByLikes(orderByLikes)}
               className={orderByLikes ? "active" : ""}
             >
               <FilterIcon /> Likes
@@ -495,7 +519,7 @@ const Body = () => {
           <li>
             <button
               darkhover="true"
-              onClick={() => reorderByRT()}
+              onClick={() => reorderByRT(orderByRT)}
               className={orderByRT ? "active" : ""}
             >
               <FilterIcon order="desc" /> Retweets
