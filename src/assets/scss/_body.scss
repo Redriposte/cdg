@@ -271,7 +271,6 @@
     }
 
     .page-item {
-        width: 25px;
         aspect-ratio: 1/1;
         border-radius: 50%;
         display: flex;
@@ -280,6 +279,10 @@
         font-weight: bold;
         color: var(--blue);
         cursor: pointer;
+
+        a {
+            padding: 5px;
+        }
     }
 
     .page-item:not(.active) {
