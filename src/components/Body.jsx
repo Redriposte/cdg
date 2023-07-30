@@ -158,12 +158,13 @@ function kFormatter(num) {
 
 const fuseOptions = {
   includeScore: true,
-  keys: ["names", "content", "hashtags"],
+  keys: ["content", "names", "hashtags"],
   useExtendedSearch: true,
   minMatchCharLength: 4,
   isCaseSensitive: false,
+  ignoreLocation: true,
   shouldSort: true,
-  threshold: 0.5,
+  threshold: 0.2,
 };
 
 const Body = () => {

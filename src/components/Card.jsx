@@ -11,6 +11,13 @@ const parseContent = (content) => {
   return content?.replace(/((#|@)\w*)/g, "<span data-blue='blue'>$1</span>");
 };
 
+function truncateString(str, num) {
+  if (str.length <= num) {
+    return str
+  }
+  return str.slice(0, num) + '...'
+}
+
 const Card = ({ data }) => {
 
   const goToLink = (d) => {
@@ -42,7 +49,7 @@ const Card = ({ data }) => {
         </svg>
       </header>
       <main className="main">
-        <p dangerouslySetInnerHTML={{ __html: parseContent(data.content) }}></p>
+        <p dangerouslySetInnerHTML={{ __html: parseContent(truncateString(data.content, 260)) }}></p>
 
         <div className="preview-container">
           <img className="preview" src={data.url} alt="image preview" />
