@@ -8,7 +8,7 @@ const options = {
 };
 
 const parseContent = (content) => {
-  return content.replace(/((#|@)\w*)/g, "<span data-blue='blue'>$1</span>");
+  return content?.replace(/((#|@)\w*)/g, "<span data-blue='blue'>$1</span>");
 };
 
 const Card = ({ data }) => {
@@ -18,7 +18,7 @@ const Card = ({ data }) => {
   }
 
   return (
-    <div className="card shadow" onClick={() => goToLink(data)}>
+    <div className="card shadow" onSubmit={() => goToLink(data)} onClick={() => goToLink(data)}>
       <header>
         <img src={logo} alt="logo cdc" />
         <div className="header-text">

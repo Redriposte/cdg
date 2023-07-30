@@ -122,11 +122,25 @@ const colourStyles = {
   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
     return {
       ...styles,
-      backgroundColor: isDisabled ? "red" : blue,
+      backgroundColor: isDisabled ? "red" : "blue",
       color: "#FFF",
       cursor: isDisabled ? "not-allowed" : "default",
     };
   },
+  multiValue: (styles, { data }) => {
+    return {
+      ...styles,
+      backgroundColor: data.value.startsWith('#') ? '#FADFDC' : data.value.startsWith('@') ? '#F5B09B' : '#eaebec',
+    };
+  },
+  multiValueRemove: (styles, { data }) => ({
+    ...styles,
+    color: data.color,
+    ':hover': {
+      backgroundColor: "#1D9BF0",
+      color: 'white',
+    },
+  }),
   valueContainer: (provided, state) => ({
     ...provided,
     textOverflow: "ellipsis",
@@ -176,7 +190,7 @@ const Body = () => {
       setOrderByRT(false);
 
       setSearchWordsList((s) => searchWords);
-      fuseSearchTerms(searchWords);
+      searchGenerator(searchWords, selectedDayRange);
       if(searchWords === '') {
         setSelectedDayRange({
           from: null,
@@ -188,25 +202,50 @@ const Body = () => {
     }
   };
 
-  const fuseSearchTerms = (searchTerms) => {
-    if (searchTerms) {
-      const fuse = new Fuse(data[0].tweets, fuseOptions);
-      const result = fuse.search(searchTerms).map((r) => ({...r.item, score: r.score}));
+  const searchGenerator = (searchTerms, date) => {
+    const searchTermsEmpty = searchTerms === '';
+    const dateIsEmpty = date.from === null || date.to === null;
+    const fuse = new Fuse(data[0].tweets, fuseOptions);
 
-      if (result.length > 0) {
-        setDataJson((s) => [{ tweets: result.sort((a, b) => b-a) }]);
-      } else {
-        setDataJson((s) => dataJsonRaw);
-      }
-      resetPage();
-    } else {
-      setDataJson((s) => dataJsonRaw);
+    let result = [];
+
+    if(searchTermsEmpty && dateIsEmpty) {
+      result = [{ tweets: data[0].tweets.sort((a, b) => b-a) }];
     }
-  };
+
+    if(!searchTermsEmpty && dateIsEmpty) {
+      const resultFromFuse = fuse.search(searchTerms).map((r) => ({...r.item, score: r.score}));
+      result = [{ tweets: resultFromFuse.sort((a, b) => b-a) }];
+    }
+
+    if(searchTermsEmpty && !dateIsEmpty) {
+      const resultFilteredByDate = [{ tweets: data[0].tweets.sort((a, b) => b-a) }][0].tweets.filter((t) => {
+        return isWithinInterval(new Date(t.createdAt), {
+          start: new Date(`${date.from.year}-${date.from.month}-${date.from.day}`),
+          end: new Date(`${date.to.year}-${date.to.month}-${date.to.day === 31 ? 30 : date.to.day + 1}`),
+        });
+      });
+      result = [{ tweets: resultFilteredByDate.sort((a, b) => b-a) }];
+    }
+
+    if(!searchTermsEmpty && !dateIsEmpty) {
+      const resultFromFuse = fuse.search(searchTerms).map((r) => ({...r.item, score: r.score}));
+      const resultFilteredByTermsAndDate = [{ tweets: resultFromFuse.sort((a, b) => b-a) }][0].tweets.filter((t) => {
+        return isWithinInterval(new Date(t.createdAt), {
+          start: new Date(`${date.from.year}-${date.from.month}-${date.from.day}`),
+          end: new Date(`${date.to.year}-${date.to.month}-${date.to.day === 31 ? 30 : date.to.day + 1}`),
+        });
+      });
+      result = [{ tweets: resultFilteredByTermsAndDate.sort((a, b) => b-a) }];
+    }
+
+    setDataJson((s) => result);
+    resetPage();
+  }
 
   useEffect(() => {
-    fuseSearchTerms(searchWordsList);
-  }, [searchWordsList, dataJsonRaw]);
+    searchGenerator(searchWordsList, selectedDayRange);
+  }, [searchWordsList, selectedDayRange]);
 
   const reorderByLikes = (v) => {
     const b = (v = !v);
@@ -227,7 +266,7 @@ const Body = () => {
             { tweets: orderBy(dataJson[0].tweets, "likes", "desc") },
           ]);
         } else {
-          fuseSearchTerms(searchWordsList);
+          searchGenerator(searchWordsList, selectedDayRange);
         }
     }
     setOrderByLikes(b);
@@ -252,7 +291,7 @@ const Body = () => {
             { tweets: orderBy(dataJson[0].tweets, "retweets", "desc") },
           ]);
         } else {
-          fuseSearchTerms(searchWordsList);
+          searchGenerator(searchWordsList, selectedDayRange);
         }
     }
     setOrderByRT(b);
@@ -267,9 +306,6 @@ const Body = () => {
   };
 
   const resetAll = () => {
-    setDataJsonRaw([{
-      tweets: data[0].tweets.sort((d1, d2) => new Date(d2.createdAt).getTime() - new Date(d1.createdAt).getTime())
-    }]);
     setSelectedDayRange({
       from: null,
       to: null,
@@ -279,37 +315,14 @@ const Body = () => {
     if(creatableSelectInputRef?.current) {
       creatableSelectInputRef.current.clearValue()
     }
+    setDataJsonRaw([{
+      tweets: data[0].tweets.sort((d1, d2) => new Date(d2.createdAt).getTime() - new Date(d1.createdAt).getTime())
+    }]);
     setCurrentPage(0);
   };
 
   const filterByDate = (d) => {
-    if ((d?.from && d?.to) && searchWordsList === "" && (dataJson[0].tweets.length === data[0].tweets.length)) {
-      console.log("EMPTY");
-      const dateFiltered = dataJsonRaw[0].tweets.filter((t) => {
-        return isWithinInterval(new Date(t.createdAt), {
-          start: new Date(`${d.from.year}-${d.from.month}-${d.from.day}`),
-          end: new Date(`${d.to.year}-${d.to.month}-${d.to.day + 1}`),
-        });
-      });
-      setDataJsonRaw([
-        {
-          tweets: dateFiltered,
-        },
-      ]);
-    } else if((d?.from && d?.to) && searchWordsList !== "" && dataJson[0].tweets.length > 1) {
-      console.log("FULL", searchWordsList);
-      // const dateFiltered = dataJson[0].tweets.filter((t) => {
-      //   return isWithinInterval(new Date(t.createdAt), {
-      //     start: new Date(`${d.from.year}-${d.from.month}-${d.from.day}`),
-      //     end: new Date(`${d.to.year}-${d.to.month}-${d.to.day + 1}`),
-      //   });
-      // });
-      // setDataJson([
-      //   {
-      //     tweets: dateFiltered,
-      //   },
-      // ]);
-    }
+    searchGenerator(searchWordsList, d);
     setSelectedDayRange(d);
   };
 
@@ -391,7 +404,7 @@ const Body = () => {
             }
           }}
           customDaysClassName={[
-            ...new Set(dataJsonRaw[0].tweets.map((t) => t.createdAt).flat()),
+            ...new Set(data[0].tweets.map((t) => t.createdAt).flat()),
           ].map((date) => {
             const ndate = date.split("T")[0];
             return {
@@ -557,7 +570,7 @@ const Body = () => {
         </section>
       </PaginatedItems>
 
-      {dataJsonRaw[0].tweets.length === 0 && (
+      {dataJson[0].tweets.length === 0 && (
         <section className="reset-section">
           Aucun résultat pour cette recherche{" "}
           <button className="btn reset" onClick={() => resetAll()}>

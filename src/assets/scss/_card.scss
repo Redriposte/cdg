@@ -12,6 +12,10 @@
     justify-content: space-between;
     cursor: pointer;
 
+    &:hover {
+        border: 1px solid var(--blue);
+    }
+
     @media screen and (max-width: 674px) {
         width: 100%;
     }
@@ -52,9 +56,9 @@
 
     main {
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         flex-direction: column;
-        gap: 10px;
+        flex-grow: 1;
 
         [data-blue] {
             color: var(--blue);
@@ -63,7 +67,7 @@
         p {
             font-size: 0.85rem;
             line-height: 1.4;
-            // min-height: 60px;
+            margin-bottom: 10px;
         }
 
         .preview-container {
