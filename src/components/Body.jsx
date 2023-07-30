@@ -391,6 +391,7 @@ const Body = () => {
           value={selectedDayRange}
           onChange={filterByDate}
           inputPlaceholder="Filtrer par date"
+          calendarPopperPosition='bottom'
           locale={myCustomLocale}
           colorPrimary="var(--blue)" // added this
           colorPrimaryLight="var(--light-gray)"
