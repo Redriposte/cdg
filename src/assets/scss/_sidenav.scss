@@ -2,8 +2,9 @@
     max-width: 74px;
     margin: 35px 12px;
 
-    @media screen and (max-width: 992px) {
+    @media screen and (max-width: 1224px) {
         width: 100%;
+        margin: 12px;
     }
 
     &__list {

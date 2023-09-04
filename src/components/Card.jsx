@@ -32,7 +32,7 @@ const Card = ({ data }) => {
           <span>Caisses de grève</span>
           <br />
           <a href={data.link} target="_blanc">
-            @caissedegreve
+            @caissesdegreve
           </a>
         </div>
         <svg

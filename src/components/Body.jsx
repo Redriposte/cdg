@@ -580,6 +580,9 @@ const Body = () => {
           </button>
         </section>
       )}
+      <footer onClick={() => {document.querySelector('#root').scrollIntoView({ behavior: 'smooth' }, 500)}}>
+        <button className='btn btn-up'>↑</button>
+      </footer>
     </main>
   );
 };
@@ -618,7 +621,7 @@ function PaginatedItems({
         nextLabel="⇢"
         onPageChange={handlePageClick}
         pageRangeDisplayed={0}
-        marginPagesDisplayed={0}
+        marginPagesDisplayed={1}
         pageCount={pageCount}
         pageClassName="page-item"
         pageLinkClassName="page-link"
