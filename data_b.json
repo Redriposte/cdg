@@ -1,0 +1,195 @@
+[
+    {
+        "tweets": [
+            {
+                "id": 1617606438662340609,
+                "url": "https://i.ibb.co/yPTBCNd/image.png",
+                "link": "https://twitter.com/caissesdegreve/status/1617606438662340609",
+                "hashtags": [
+                    "#boulangers",
+                    "#electricite"
+                ],
+                "names": [
+                    "Bruno Le Maire"
+                ],
+                "createdAt": "2021-04-11",
+                "dates": [
+                    "2023-01-23"
+                ],
+                "content": "Soutien des #boulangers Les paroles (Bruno Le Maire) vs Les actes (CGT Energie)",
+                "likes": 331,
+                "retweets": 153,
+                "origin": "twitter"
+            },
+            {
+                "id": 1617473236467326977,
+                "url": "https://i.ibb.co/S5FRhtC/image.png",
+                "link": "https://twitter.com/caissesdegreve/status/1617473236467326977",
+                "hashtags": [
+                    "#analyse", "#reformedesretraites", "#salaire", "#accumulation", "#inegalites"
+                ],
+                "names": [
+                    "Clément Viktorovitch"
+                ],
+                "createdAt": "2023-01-23",
+                "dates": [
+                    "2023-01-23"
+                ],
+                "content": "Ce que fait concrètement cette réforme, c'est mettre à contribution les pauvres qui s'appauvrissent, tout en épargnant les riches qui, eux, s'enrichissent @clemovitch",
+                "likes": 1196,
+                "retweets": 629,
+                "origin": "twitter"
+            },
+            {
+                "id": 1617302219006816257,
+                "url": "https://i.ibb.co/XFdcSYc/image.png",
+                "link": "https://twitter.com/caissesdegreve/status/1617302219006816257",
+                "hashtags": [
+                    "#nuisances", "#sociale","#contestation","#manif","#manifestations"
+                ],
+                "names": [
+                    "Emmanuel Macron"
+                ],
+                "createdAt": "2023-01-22",
+                "dates": [
+                    "2023-01-01"
+                ],
+                "content": "“La possibilité d'exprimer son mécontentement, de manière apaisée, avec le moins de nuisances possibles et que les choses se passent calmement” En d'autres termes, ça doit lui en toucher une sans bouger l'autre.",
+                "likes": 223,
+                "retweets": 68,
+                "origin": "twitter"
+            },
+            {
+                "id": 1617296345643028480,
+                "url": "https://i.ibb.co/9Nmt4ZS/image.png",
+                "link": "https://twitter.com/caissesdegreve/status/1617296345643028480",
+                "hashtags": [
+                    "#retraites", "#salaires", "#hopital", "#education", "#SDF", "#réfugiés"
+                ],
+                "names": [
+                    "Phillippe poutou"
+                ],
+                "createdAt": "2023-01-22",
+                "dates": [
+                    "2023-01-23"
+                ],
+                "content": "“les retraites, il n'y a pas d'argent. On est obligé de faire ça. Il n'y a pas d'argent pour augmenter les salaires, pour l'hôpital, les enseignants, les SDF, les réfugiés... Et on sait que l'argent existe,et qu'il s'accumule quelque part.” @PhilippePoutou",
+                "likes": 1257,
+                "retweets": 463,
+                "origin": "twitter"
+            },
+            {
+                "id": 1616623232752275459,
+                "url": "https://i.ibb.co/8c8Z7zW/image.png",
+                "link": "https://twitter.com/caissesdegreve/status/1616623232752275459",
+                "hashtags": [
+                    "#Armée", "#Budget"
+                ],
+                "names": [
+                    "Bruno Le Maire","Emmanuel Macron"
+                ],
+                "createdAt": "2023-01-21",
+                "dates": [
+                    "2023-01-21"
+                ],
+                "content": "Non, rien.",
+                "likes": 346,
+                "retweets": 181,
+                "origin": "twitter"
+            },
+            {
+                "id": 1616567707335331840,
+                "url": "https://i.ibb.co/GtYF2YK/image.png",
+                "link": "https://twitter.com/caissesdegreve/status/1616567707335331840",
+                "hashtags": [
+                    "#ReformeDesRetraites", "#Travail"
+                ],
+                "names": [
+                    "Olivier Dussopt"
+                ],
+                "createdAt": "2023-01-20",
+                "dates": [
+                    "2023-01-20"
+                ],
+                "content": "",
+                "likes": 2386,
+                "retweets": 611,
+                "origin": "twitter"
+            },
+            {
+                "id": 1501357544941527047,
+                "url": "https://i.ibb.co/tHZ1BK2/image.png",
+                "link": "https://twitter.com/caissesdegreve/status/1501357544941527047",
+                "hashtags": [
+                    "#Réfugiés", "#Accueil", "#Racisme"
+                ],
+                "names": [
+                    "Trevor Noah"
+                ],
+                "createdAt": "2022-03-09",
+                "dates": [
+                    "2022-03-09"
+                ],
+                "content": "",
+                "likes": 908,
+                "retweets": 402,
+                "origin": "twitter"
+            },
+            {
+                "id": 1499082790255697926,
+                "url": "https://i.ibb.co/KVVBWT5/image.png",
+                "link": "https://twitter.com/caissesdegreve/status/1499082790255697926",
+                "hashtags": [
+                    "#attentat","#racisme"
+                ],
+                "names": [
+                    "Pierre-Emmanuel Barré"
+                ],
+                "createdAt": "2022-03-02",
+                "dates": [
+                    "2016-06-01"
+                ],
+                "content": "#refugies #ukraine #Afghanistan L'occasion de rappeler la loi du kilomètre-mélanine de @Sale_Con",
+                "likes": 603,
+                "retweets": 262,
+                "origin": "twitter"
+            },
+            {
+                "id": 1495697037282717704,
+                "url": "https://i.ibb.co/t8vfBG6/image.png",
+                "link": "https://twitter.com/caissesdegreve/status/1495697037282717704",
+                "hashtags": [
+                    "#musulmans","#racises","#racisme","#chezEux","#zemmour"
+                ],
+                "names": [
+                    "Fabien Roussel"
+                ],
+                "createdAt": "2022-02-21",
+                "dates": [
+                    "2022-02-21"
+                ],
+                "content": "“J'entends l'angoisse, de citoyens aujourd'hui qui sont d'origine étrangère, qui sont musulmans, et qui ont peur d'être renvoyés chez eux si lui accède au pouvoir” Fabien #Roussel “Chez eux”...🙄",
+                "likes": 488,
+                "retweets": 155,
+                "origin": "twitter"
+            },
+            {
+                "id": 1494290967637082114,
+                "url": "https://i.ibb.co/B4J3Pkq/image.png",
+                "link": "https://twitter.com/caissesdegreve/status/1494290967637082114",
+                "hashtags": [
+                    "#primairepopulaire","#parrainages","#taubira","#karma"
+                ],
+                "names": [
+                    "Samuel Grzybowski"
+                ],
+                "createdAt": "2022-02-17",
+                "dates": [],
+                "content": "#Karma #PrimairePopulaire #Parrainages #Taubira",
+                "likes": 290,
+                "retweets": 108,
+                "origin": "twitter"
+            }
+        ]
+    }
+]
